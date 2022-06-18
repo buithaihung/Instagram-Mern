@@ -1,15 +1,19 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { login } from "../redux/actions/authAction";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const initialState = { email: "", password: "" };
   const [userData, setUserData] = useState(initialState);
   const { email, password } = userData;
   const dispatch = useDispatch();
-  const [typePass, setTypePass] = useState(false)
-
+  const { auth } = useSelector((state) => state);
+  const [typePass, setTypePass] = useState(false);
+  const history = useHistory();
+  useEffect(() => {
+    if (auth.token) history.push("/");
+  }, [auth.token, history]);
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     // console.log({ ...userData });
@@ -50,8 +54,8 @@ const Login = () => {
               value={password}
               name="password"
             />
-            <small onClick={() => setTypePass(!typePass)} >
-              {typePass ? 'Hide' : 'Show'} 
+            <small onClick={() => setTypePass(!typePass)}>
+              {typePass ? "Hide" : "Show"}
             </small>
           </div>
         </div>

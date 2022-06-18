@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory, Link } from "react-router-dom";
 import { register } from "../redux/actions/authAction";
 const Register = () => {
-  const { auth } = useSelector((state) => state);
+  const { auth, alert } = useSelector((state) => state);
   const history = useHistory();
   const dispatch = useDispatch();
   const initialState = {
@@ -15,7 +15,7 @@ const Register = () => {
     gender: "male",
   };
   const [userData, setUserData] = useState(initialState);
-  const { fullname, username, email, password, cf_password, gender } = userData;
+  const { fullname, username, email, password, cf_password } = userData;
   useEffect(() => {
     if (auth.token) history.push("/");
   }, [auth.token, history]);
@@ -31,7 +31,7 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // console.log(userData);
-    dispatch(register(userData))
+    dispatch(register(userData));
   };
   return (
     <div className="auth_page">
@@ -47,9 +47,10 @@ const Register = () => {
             onChange={handleChangeInput}
             value={fullname}
             name="fullname"
+            style={{ background: `${alert.fullname ? "#fd2d6a14" : ""}` }}
           />
-          <small className="form-text text-muted">
-            We'll never share your email with anyone else.
+          <small className="form-text text-danger">
+            {alert.fullname ? alert.fullname : ""}
           </small>
         </div>
 
@@ -62,9 +63,10 @@ const Register = () => {
             onChange={handleChangeInput}
             value={username.toLowerCase().replace(/ /g, "")}
             name="username"
+            style={{ background: `${alert.username ? "#fd2d6a14" : ""}` }}
           />
-          <small className="form-text text-muted">
-            We'll never share your email with anyone else.
+          <small className="form-text text-danger">
+            {alert.username ? alert.username : ""}
           </small>
         </div>
 
@@ -78,9 +80,10 @@ const Register = () => {
             onChange={handleChangeInput}
             value={email}
             name="email"
+            style={{ background: `${alert.email ? "#fd2d6a14" : ""}` }}
           />
-          <small id="emailHelp" className="form-text text-muted">
-            We'll never share your email with anyone else.
+          <small id="emailHelp" className="form-text text-danger">
+            {alert.email ? alert.email : ""}
           </small>
         </div>
         <div className="form-group">
@@ -93,11 +96,15 @@ const Register = () => {
               onChange={handleChangeInput}
               value={password}
               name="password"
+              style={{ background: `${alert.password ? "#fd2d6a14" : ""}` }}
             />
             <small onClick={() => setTypePass(!typePass)}>
               {typePass ? "Hide" : "Show"}
             </small>
           </div>
+          <small className="form-text text-danger">
+            {alert.password ? alert.password : ""}
+          </small>
         </div>
 
         <div className="form-group">
@@ -110,11 +117,15 @@ const Register = () => {
               onChange={handleChangeInput}
               value={cf_password}
               name="cf_password"
+              style={{ background: `${alert.cf_password ? "#fd2d6a14" : ""}` }}
             />
             <small onClick={() => setTypeCfPass(!typeCfPass)}>
               {typeCfPass ? "Hide" : "Show"}
             </small>
           </div>
+          <small className="form-text text-danger">
+            {alert.cf_password ? alert.cf_password : ""}
+          </small>
         </div>
 
         <div className="row justify-content-between mx-0 mb-1">
