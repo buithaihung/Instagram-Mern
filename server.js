@@ -12,6 +12,7 @@ app.use(cookieParser());
 //Routes
 
 app.use('/api',require('./routers/authRouter'))
+app.use('/api',require('./routers/userRouter'))
 
 
 const URI = process.env.MONGODB_URL;
