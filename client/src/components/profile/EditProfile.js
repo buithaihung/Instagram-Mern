@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { checkImage } from "../../utils/imageUpload";
 import { GLOBALTYPES } from "../../redux/actions/globalTypes";
+import { updateProfileUser } from "../../redux/actions/profileAction";
 const EditProfile = ({ setOnEdit }) => {
   const initState = {
     fullname: "",
@@ -13,7 +14,7 @@ const EditProfile = ({ setOnEdit }) => {
   };
   const { auth, theme } = useSelector((state) => state);
   const [userData, setUserData] = useState(initState);
-  const { fullname, mobile, address, website, story } = userData;
+  const { fullname, mobile, address, website, story, gender } = userData;
   const [avatar, setAvatar] = useState("");
   const dispatch = useDispatch();
   useEffect(() => {
@@ -30,6 +31,10 @@ const EditProfile = ({ setOnEdit }) => {
       return dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err } });
     setAvatar(file);
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(updateProfileUser({ userData, avatar, auth }));
+  };
   return (
     <div className="edit_profile">
       <button
@@ -38,7 +43,7 @@ const EditProfile = ({ setOnEdit }) => {
       >
         Close
       </button>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="info_avatar">
           <img
             src={avatar ? URL.createObjectURL(avatar) : auth.user.avatar}
@@ -127,6 +132,7 @@ const EditProfile = ({ setOnEdit }) => {
         <label htmlFor="gender">Gender</label>
         <div className="input-group-prepend px-0 mb-4">
           <select
+            value={gender}
             name="gender"
             id="gender"
             className="custom-select text-capitalize"
