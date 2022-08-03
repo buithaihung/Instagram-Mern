@@ -11,9 +11,10 @@ app.use(cookieParser());
 
 //Routes
 
-app.use('/api',require('./routers/authRouter'))
-app.use('/api',require('./routers/userRouter'))
-
+app.use("/api", require("./routers/authRouter"));
+app.use("/api", require("./routers/userRouter"));
+app.use("/api", require("./routers/postRouter"));
+app.use("/api", require("./routers/commentRouter"));
 
 const URI = process.env.MONGODB_URL;
 mongoose.connect(
