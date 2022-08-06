@@ -5,17 +5,29 @@ import moment from "moment";
 import LikeButton from "../../LikeButton";
 import { useSelector, useDispatch } from "react-redux";
 import CommentMenu from "./CommentMenu";
-import { updateComment } from "../../../redux/actions/commentAction";
-const CommentCard = ({ comment, post }) => {
+import InputComment from "../InputComment";
+import {
+  updateComment,
+  likeComment,
+  unLikeComment,
+} from "../../../redux/actions/commentAction";
+const CommentCard = ({ children, comment, post, commentId }) => {
   const [content, setContent] = useState("");
   const [readMore, setReadMore] = useState(false);
   const [isLike, setIsLike] = useState(false);
   const { auth } = useSelector((state) => state);
   const [onEdit, setOnEdit] = useState(false);
+  const [loadLike, setLoadLike] = useState(false);
+  const [onReply, setOnReply] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     setContent(comment.content);
-  }, [comment]);
+    setIsLike(false);
+    setOnReply(false);
+    if (comment.likes.find((like) => like._id === auth.user._id)) {
+      setIsLike(true);
+    }
+  }, [comment, auth.user._id]);
   const handleUpdate = () => {
     if (comment.content !== content) {
       dispatch(updateComment({ comment, post, content, auth }));
@@ -24,8 +36,24 @@ const CommentCard = ({ comment, post }) => {
       setOnEdit(false);
     }
   };
-  const handleLike = () => {};
-  const handleUnLike = () => {};
+  const handleLike = async () => {
+    if (loadLike) return;
+    setIsLike(false);
+    setLoadLike(true);
+    await dispatch(likeComment({ comment, post, auth }));
+    setLoadLike(false);
+  };
+  const handleUnLike = async () => {
+    if (loadLike) return;
+    setIsLike(false);
+    setLoadLike(true);
+    await dispatch(unLikeComment({ comment, post, auth }));
+    setLoadLike(false);
+  };
+  const handleReply = () => {
+    if (onReply) return setOnReply(false);
+    setOnReply({ ...comment, commentId });
+  };
   const styleCard = {
     opacity: comment._id ? 1 : 0.5,
     pointerEvents: comment._id ? "inherit" : "none",
@@ -46,6 +74,11 @@ const CommentCard = ({ comment, post }) => {
             />
           ) : (
             <div>
+              {comment.tag && comment.tag._id !== comment.user._id && (
+                <Link to={`/profile/${comment.tag._id}`} className="mr-1">
+                  @{comment.tag.username}
+                </Link>
+              )}
               <span>
                 {content.length < 100
                   ? content
@@ -84,7 +117,9 @@ const CommentCard = ({ comment, post }) => {
                 </small>
               </>
             ) : (
-              <small className="font-weight-bold mr-3">reply</small>
+              <small className="font-weight-bold mr-3" onClick={handleReply}>
+                {onReply ? "cancel" : "reply"}
+              </small>
             )}
           </div>
         </div>
@@ -95,7 +130,6 @@ const CommentCard = ({ comment, post }) => {
           <CommentMenu
             post={post}
             comment={comment}
-            auth={auth}
             setOnEdit={setOnEdit}
           />
           <LikeButton
@@ -105,6 +139,14 @@ const CommentCard = ({ comment, post }) => {
           />
         </div>
       </div>
+      {onReply && (
+        <InputComment post={post} onReply={onReply} setOnReply={setOnReply}>
+          <Link to={`/profile/${onReply.user._id}`}>
+            @{onReply.user.username}
+          </Link>
+        </InputComment>
+      )}
+      {children}
     </div>
   );
 };
