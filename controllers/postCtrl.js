@@ -1,4 +1,5 @@
 const Posts = require("../models/postModel");
+const Comments = require("../models/commentModel");
 class APIfeatures {
   constructor(query, queryString) {
     this.query = query;
@@ -36,11 +37,16 @@ const postCtrl = {
   },
   getPosts: async (req, res) => {
     try {
-      const posts = await Posts.find({
-        user: [...req.user.following, req.user._id],
-      })
-        .sort("-createAt")
-        .populate("user likes", "avatar username fullname")
+      const features = new APIfeatures(
+        Posts.find({
+          user: [...req.user.following, req.user._id],
+        }),
+        req.query
+      ).paginating();
+
+      const posts = await features.query
+        .sort("-createdAt")
+        .populate("user likes", "avatar username fullname followers")
         .populate({
           path: "comments",
           populate: {
@@ -48,8 +54,9 @@ const postCtrl = {
             select: "-password",
           },
         });
+
       res.json({
-        msg: "Success",
+        msg: "Success!",
         result: posts.length,
         posts,
       });
@@ -134,12 +141,11 @@ const postCtrl = {
   },
   getUserPosts: async (req, res) => {
     try {
-      // const features = new APIfeatures(
-      //   Posts.find({ user: req.params.id }),
-      //   req.query
-      // ).paginating();
-      // const posts = await features.query.sort("-createdAt");
-      const posts = await Posts.find({ user: req.params.id }).sort("-createAt");
+      const features = new APIfeatures(
+        Posts.find({ user: req.params.id }),
+        req.query
+      ).paginating();
+      const posts = await features.query.sort("-createdAt");
 
       res.json({
         posts,
@@ -162,6 +168,45 @@ const postCtrl = {
         });
       res.json({
         post,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  getPostsDicover: async (req, res) => {
+    try {
+      const newArr = [...req.user.following, req.user._id];
+
+      const num = req.query.num || 9;
+
+      const posts = await Posts.aggregate([
+        { $match: { user: { $nin: newArr } } },
+        { $sample: { size: Number(num) } },
+      ]);
+
+      return res.json({
+        msg: "Success!",
+        result: posts.length,
+        posts,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  deletePost: async (req, res) => {
+    try {
+      const post = await Posts.findOneAndDelete({
+        _id: req.params.id,
+        user: req.user._id,
+      });
+      await Comments.deleteMany({ _id: { $in: post.comments } });
+
+      res.json({
+        msg: "Deleted Post!",
+        newPost: {
+          ...post,
+          user: req.user,
+        },
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
