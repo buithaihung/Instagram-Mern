@@ -39,16 +39,14 @@ const RightSideBar = () => {
 
       <div style={{ opacity: 0.5 }} className="my-2">
         <a
-          href="https://www.youtube.com/c/DevATHTML"
+          href="https://www.facebook.com/hng.bt28/"
           target="_blank"
           rel="noreferrer"
           style={{ wordBreak: "break-all" }}
         >
-          https://www.facebook.com/hng.bt28/
+          Thai Hung
         </a>
         <small className="d-block">Welcome to our channel HBT-NETWORK</small>
-
-        <small>&copy; 2022 HBT-NETWORK FROM Bui Thai Hung</small>
       </div>
     </div>
   );
