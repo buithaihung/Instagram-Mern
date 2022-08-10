@@ -74,5 +74,15 @@ const SoketServer = (socket) => {
     const user = users.find((user) => user.id === newUser._id);
     user && socket.to(`${user.socketId}`).emit("unFollowToClient", newUser);
   });
+  // Notification
+  socket.on("createNotify", (msg) => {
+    const client = users.find((user) => msg.recipients.includes(user.id));
+    client && socket.to(`${client.socketId}`).emit("createNotifyToClient", msg);
+  });
+
+  socket.on("removeNotify", (msg) => {
+    const client = users.find((user) => msg.recipients.includes(user.id));
+    client && socket.to(`${client.socketId}`).emit("removeNotifyToClient", msg);
+  });
 };
 module.exports = SoketServer;

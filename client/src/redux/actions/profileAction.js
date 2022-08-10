@@ -1,6 +1,8 @@
 import { GLOBALTYPES, DeleteData } from "./globalTypes";
 import { getDataAPI, patchDataAPI } from "../../utils/fetchData";
 import { imageUpload } from "../../utils/imageUpload";
+import { createNotify, removeNotify } from "../actions/notifyAction";
+
 export const PROFILE_TYPES = {
   LOADING: "LOADING_PROFILE",
   GET_USER: "GET_PROFILE_USER",
@@ -10,17 +12,20 @@ export const PROFILE_TYPES = {
   GET_POSTS: "GET_PROFILE_POSTS",
   UPDATE_POST: "UPDATE_PROFILE_POST",
 };
+
 export const getProfileUsers =
   ({ id, auth }) =>
   async (dispatch) => {
     dispatch({ type: PROFILE_TYPES.GET_ID, payload: id });
+
     try {
       dispatch({ type: PROFILE_TYPES.LOADING, payload: true });
       const res = getDataAPI(`/user/${id}`, auth.token);
       const res1 = getDataAPI(`/user_posts/${id}`, auth.token);
+
       const users = await res;
       const posts = await res1;
-      // console.log(res1);
+
       dispatch({
         type: PROFILE_TYPES.GET_USER,
         payload: users.data,
@@ -39,30 +44,34 @@ export const getProfileUsers =
       });
     }
   };
+
 export const updateProfileUser =
   ({ userData, avatar, auth }) =>
   async (dispatch) => {
     if (!userData.fullname)
       return dispatch({
         type: GLOBALTYPES.ALERT,
-        payload: { error: "please add your full name" },
+        payload: { error: "Please add your full name." },
       });
+
     if (userData.fullname.length > 25)
       return dispatch({
         type: GLOBALTYPES.ALERT,
-        payload: { error: "your full name too long" },
+        payload: { error: "Your full name too long." },
       });
+
     if (userData.story.length > 200)
       return dispatch({
         type: GLOBALTYPES.ALERT,
-        payload: { error: "your story too long" },
+        payload: { error: "Your story too long." },
       });
+
     try {
       let media;
       dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-      if (avatar) {
-        media = await imageUpload([avatar]);
-      }
+
+      if (avatar) media = await imageUpload([avatar]);
+
       const res = await patchDataAPI(
         "user",
         {
@@ -71,6 +80,7 @@ export const updateProfileUser =
         },
         auth.token
       );
+
       dispatch({
         type: GLOBALTYPES.AUTH,
         payload: {
@@ -82,6 +92,7 @@ export const updateProfileUser =
           },
         },
       });
+
       dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
     } catch (err) {
       dispatch({
@@ -90,6 +101,7 @@ export const updateProfileUser =
       });
     }
   };
+
 export const follow =
   ({ users, user, auth, socket }) =>
   async (dispatch) => {
@@ -124,14 +136,14 @@ export const follow =
       socket.emit("follow", res.data.newUser);
 
       // Notify
-      // const msg = {
-      //     id: auth.user._id,
-      //     text: 'has started to follow you.',
-      //     recipients: [newUser._id],
-      //     url: `/profile/${auth.user._id}`,
-      // }
+      const msg = {
+        id: auth.user._id,
+        text: "has started to follow you.",
+        recipients: [newUser._id],
+        url: `/profile/${auth.user._id}`,
+      };
 
-      // dispatch(createNotify({msg, auth, socket}))
+      dispatch(createNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,
@@ -139,6 +151,7 @@ export const follow =
       });
     }
   };
+
 export const unfollow =
   ({ users, user, auth, socket }) =>
   async (dispatch) => {
@@ -182,14 +195,14 @@ export const unfollow =
       socket.emit("unFollow", res.data.newUser);
 
       // Notify
-      // const msg = {
-      //   id: auth.user._id,
-      //   text: "has started to follow you.",
-      //   recipients: [newUser._id],
-      //   url: `/profile/${auth.user._id}`,
-      // };
+      const msg = {
+        id: auth.user._id,
+        text: "has started to follow you.",
+        recipients: [newUser._id],
+        url: `/profile/${auth.user._id}`,
+      };
 
-      // dispatch(removeNotify({ msg, auth, socket }));
+      dispatch(removeNotify({ msg, auth, socket }));
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,

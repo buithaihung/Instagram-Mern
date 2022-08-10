@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const SocketServer = require('./socketServer')
+const SocketServer = require("./socketServer");
 
 const app = express();
 app.use(express.json());
@@ -14,7 +14,7 @@ app.use(cookieParser());
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 io.on("connection", (socket) => {
-  SocketServer(socket)
+  SocketServer(socket);
 });
 
 //Routes
@@ -23,6 +23,7 @@ app.use("/api", require("./routers/authRouter"));
 app.use("/api", require("./routers/userRouter"));
 app.use("/api", require("./routers/postRouter"));
 app.use("/api", require("./routers/commentRouter"));
+app.use("/api", require("./routers/notifyRouter"));
 
 const URI = process.env.MONGODB_URL;
 mongoose.connect(

@@ -1,11 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GLOBALTYPES } from "./redux/actions/globalTypes";
 import { POST_TYPES } from "./redux/actions/postAction";
+import { NOTIFY_TYPES } from "./redux/actions/notifyAction";
+import audiobell from './audio/got-it-done-613.mp3'
+const spawnNotification = (body, icon, url, title) => {
+  let options = {
+    body,
+    icon,
+  };
+  let n = new Notification(title, options);
 
+  n.onclick = (e) => {
+    e.preventDefault();
+    window.open(url, "_blank");
+  };
+};
 const SocketClient = () => {
-  const { auth, socket } = useSelector((state) => state);
+  const { auth, socket, notify } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const audioRef = useRef();
   // joinUser
   useEffect(() => {
     socket.emit("joinUser", auth.user);
@@ -61,8 +75,37 @@ const SocketClient = () => {
 
     return () => socket.off("unFollowToClient");
   }, [socket, dispatch, auth]);
+  // Notification
+  useEffect(() => {
+    socket.on("createNotifyToClient", (msg) => {
+      dispatch({ type: NOTIFY_TYPES.CREATE_NOTIFY, payload: msg });
 
-  return <></>;
+      if (notify.sound) audioRef.current.play();
+      spawnNotification(
+        msg.user.username + " " + msg.text,
+        msg.user.avatar,
+        msg.url,
+        "HBT-NETWORK"
+      );
+    });
+
+    return () => socket.off("createNotifyToClient");
+  }, [socket, dispatch, notify.sound]);
+
+  useEffect(() => {
+    socket.on("removeNotifyToClient", (msg) => {
+      dispatch({ type: NOTIFY_TYPES.REMOVE_NOTIFY, payload: msg });
+    });
+
+    return () => socket.off("removeNotifyToClient");
+  }, [socket, dispatch]);
+  return (
+    <>
+      <audio controls ref={audioRef} style={{ display: "none" }}>
+        <source src={audiobell} type="audio/mp3" />
+      </audio>
+    </>
+  );
 };
 
 export default SocketClient;
