@@ -1,3 +1,8 @@
+.profile{
+    width: 100%;
+    min-height: 100vh;
+}
+/* ------ Info ---------- */
 .info{
     width: 100%;
     max-width: 800px;
@@ -9,6 +14,7 @@
     justify-content: space-around;
     flex-wrap: wrap;
 }
+
 .info_content{
     min-width: 250px;
     max-width: 550px;
@@ -25,7 +31,7 @@
 .info_content_title h2{
     font-size: 2rem;
     font-weight: 400;
-    transform:  translateY(4px);
+    transform: translateY(4px);
     flex: 3;
 }
 .info_content_title button{
@@ -39,12 +45,13 @@
     text-decoration: underline;
 }
 
-/* Profile Edit */
+/* -------------- Profile Edit ------------ */
 .edit_profile{
     position: fixed;
-    top: 0;
+    top:0;
     left: 0;
     width: 100%;
+    height: 100vh;
     background: #0008;
     z-index: 9;
     overflow: auto;
@@ -72,13 +79,11 @@
     border: 1px solid #ddd;
     cursor: pointer;
 }
-
 .edit_profile .info_avatar img{
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
-
 }
 .edit_profile .info_avatar span{
     position: absolute;
@@ -86,17 +91,17 @@
     left: 0;
     width: 100%;
     height: 50%;
-    text-align:  center;
+    text-align: center;
     color: orange;
-    transform: 0.3s ease-in-out;
-    background-color: #fff5;
+    transition: 0.3s ease-in-out;
+    background: #fff5;
 }
 .edit_profile .info_avatar:hover span{
     bottom: -15%;
 }
 .edit_profile .info_avatar #file_up{
     position: absolute;
-    top: 0;
+    top:0;
     left: 0;
     width: 100%;
     height: 100%;
@@ -106,7 +111,6 @@
 ::-webkit-file-upload-button{
     cursor: pointer;
 }
-
 
 /* ----------- Follow ------- */
 .follow{
@@ -140,4 +144,29 @@
     right: 3px;
     font-size: 3rem;
     cursor: pointer;
+}
+
+/* --------- Save Tab ----------- */
+.profile_tab{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+.profile_tab button{
+    outline: none;
+    border: none;
+    background: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 5px 20px;
+    margin: 0 25px;
+    opacity: 0.5;
+}
+.profile_tab button.active{
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    opacity: 0.8;
 }
