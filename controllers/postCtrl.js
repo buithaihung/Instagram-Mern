@@ -1,6 +1,7 @@
 const Posts = require("../models/postModel");
 const Comments = require("../models/commentModel");
 const Users = require("../models/userModel");
+
 class APIfeatures {
   constructor(query, queryString) {
     this.query = query;
@@ -15,6 +16,7 @@ class APIfeatures {
     return this;
   }
 }
+
 const postCtrl = {
   createPost: async (req, res) => {
     try {
@@ -164,7 +166,7 @@ const postCtrl = {
   getPost: async (req, res) => {
     try {
       const post = await Posts.findById(req.params.id)
-        .populate("user likes", "avatar username fullname")
+        .populate("user likes", "avatar username fullname followers")
         .populate({
           path: "comments",
           populate: {
@@ -172,6 +174,10 @@ const postCtrl = {
             select: "-password",
           },
         });
+
+      if (!post)
+        return res.status(400).json({ msg: "This post does not exist." });
+
       res.json({
         post,
       });
@@ -281,4 +287,5 @@ const postCtrl = {
     }
   },
 };
+
 module.exports = postCtrl;

@@ -22,7 +22,7 @@ const SoketServer = (socket) => {
   socket.on("likePost", (newPost) => {
     const ids = [...newPost.user.followers, newPost.user._id];
     const clients = users.filter((user) => ids.includes(user.id));
-
+    // console.log(newPost);
     if (clients.length > 0) {
       clients.forEach((client) => {
         socket.to(`${client.socketId}`).emit("likeToClient", newPost);
