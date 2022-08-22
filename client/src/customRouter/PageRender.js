@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 
 const generatePage = (pageName) => {
   const component = () => require(`../pages/${pageName}`).default;
+
   try {
     return React.createElement(component());
   } catch (err) {
@@ -15,7 +16,9 @@ const generatePage = (pageName) => {
 const PageRender = () => {
   const { page, id } = useParams();
   const { auth } = useSelector((state) => state);
+
   let pageName = "";
+
   if (auth.token) {
     if (id) {
       pageName = `${page}/[id]`;

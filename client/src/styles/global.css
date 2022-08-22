@@ -47,6 +47,8 @@ img {
 @import url("./status_modal.css");
 @import url("./comments.css");
 @import url("./post_thumb.css");
+@import url("./message.css");
+@import url("./icon.css");
 
 /*----------------- Reposive ------------------*/
 @media (max-width: 768px) {
@@ -79,8 +81,11 @@ img {
   .header .logo .h1 {
     font-size: 1.5rem;
   }
-  .wrap_page{
+  .wrap_page {
     margin-bottom: 60px;
+  }
+  .message {
+    height: calc(100vh - 150px);
   }
 }
 
