@@ -36,9 +36,8 @@ const UserCard = ({
                   <div style={{ filter: theme ? "invert(1)" : "invert(0)" }}>
                     {user.text}
                   </div>
-                  {Array.isArray(user.media) && user.media.length > 0 && (
+                  {user.media && user.media.length > 0 && (
                     <div>
-                      {" "}
                       {user.media.length} <i className="fas fa-image" />
                     </div>
                   )}

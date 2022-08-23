@@ -23,7 +23,9 @@ const MsgDisplay = ({ user, msg, theme }) => {
             : imageShow(item.url, theme)}
         </div>
       ))}
-      <div className="chat_time">{new Date(msg.createAt).toLocaleString()}</div>
+      <div className="chat_time">
+        {new Date(msg.createdAt).toLocaleString()}
+      </div>
     </>
   );
 };
