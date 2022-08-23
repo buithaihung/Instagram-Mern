@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "./Avatar";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 const UserCard = ({
   user,
   border,
@@ -8,7 +9,9 @@ const UserCard = ({
   children,
   setShowFollowers,
   setShowFollowing,
+  msg,
 }) => {
+  const { theme } = useSelector((state) => state);
   const handleCloseAll = () => {
     if (handleClose) handleClose();
     if (setShowFollowers) setShowFollowers(false);
@@ -27,7 +30,24 @@ const UserCard = ({
           <Avatar src={user.avatar} size="big-avatar" />
           <div className="ml-1" style={{ transform: "translateY(-2px)" }}>
             <span className="d-block">{user.username}</span>
-            <small style={{ opacity: 0.7 }}>{user.fullname}</small>
+            <small style={{ opacity: 0.7 }}>
+              {msg ? (
+                <>
+                  <div style={{ filter: theme ? "invert(1)" : "invert(0)" }}>
+                    {user.text}
+                  </div>
+                  {Array.isArray(user.media) && user.media.length > 0 && (
+                    <div>
+                      {" "}
+                      {user.media.length} <i className="fas fa-image" />
+                    </div>
+                  )}
+                </>
+              ) : (
+                user.fullname
+              )}
+              {/* {msg && <div>abc</div>} */}
+            </small>
           </div>
         </Link>
       </div>

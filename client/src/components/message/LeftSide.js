@@ -69,14 +69,13 @@ const LeftSide = () => {
                 className={`message_user ${isActive(user)}`}
                 onClick={() => handleAddUser(user)}
               >
-                <UserCard user={user}>
+                <UserCard user={user} msg={true}>
                   <i className="fas fa-circle active" />
                 </UserCard>
               </div>
             ))}
           </>
         )}
-
       </div>
     </>
   );
