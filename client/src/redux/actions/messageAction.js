@@ -4,7 +4,7 @@ export const MESS_TYPES = {
   ADD_USER: "ADD_USER",
   ADD_MESSAGE: "ADD_MESSAGE",
   GET_CONVERSATIONS: "GET_CONVERSATIONS",
-  GET_MESSAGES: "GET_MESSAGES"
+  GET_MESSAGES: "GET_MESSAGES",
 };
 export const addUser =
   ({ user, message }) =>
@@ -19,8 +19,8 @@ export const addUser =
 export const addMessage =
   ({ msg, auth, socket }) =>
   async (dispatch) => {
-    // console.log(msg);
     dispatch({ type: MESS_TYPES.ADD_MESSAGE, payload: msg });
+    socket.emit("addMessage", msg);
     try {
       await postDataAPI("message", msg, auth.token);
     } catch (err) {
@@ -59,7 +59,7 @@ export const getMessages =
   async (dispatch) => {
     try {
       const res = await getDataAPI(`message/${id}`, auth.token);
-      dispatch({type: MESS_TYPES.GET_MESSAGES, payload: res.data })
+      dispatch({ type: MESS_TYPES.GET_MESSAGES, payload: res.data });
     } catch (err) {
       dispatch({
         type: GLOBALTYPES.ALERT,

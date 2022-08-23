@@ -84,5 +84,9 @@ const SoketServer = (socket) => {
     const client = users.find((user) => msg.recipients.includes(user.id));
     client && socket.to(`${client.socketId}`).emit("removeNotifyToClient", msg);
   });
+  socket.on("addMessage", (msg) => {
+    const user = users.find((user) => user.id === msg.recipient);
+    user && socket.to(`${user.socketId}`).emit("addMessageToClient", msg);
+  });
 };
 module.exports = SoketServer;

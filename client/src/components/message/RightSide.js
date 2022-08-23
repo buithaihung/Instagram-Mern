@@ -7,7 +7,11 @@ import Icons from "../Icons";
 import { GLOBALTYPES } from "../../redux/actions/globalTypes";
 import { imageShow, videoShow } from "../../utils/mediaShow";
 import { imageUpload } from "../../utils/imageUpload";
-import { addMessage,getMessages } from "../../redux/actions/messageAction";
+import {
+  addMessage,
+  getMessages,
+  MESS_TYPES,
+} from "../../redux/actions/messageAction";
 import LoadIcon from "../../images/loading.gif";
 const RightSide = () => {
   const { auth, message, theme, socket } = useSelector((state) => state);
@@ -59,7 +63,7 @@ const RightSide = () => {
       recipient: id,
       text,
       media: newArr,
-      createAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     };
     setLoadMedia(false);
     dispatch(addMessage({ msg, auth, socket }));
@@ -67,6 +71,7 @@ const RightSide = () => {
   useEffect(() => {
     if (id) {
       const getMessagesData = async () => {
+        dispatch({ type: MESS_TYPES.GET_MESSAGES, payload: { messages: [] } });
         await dispatch(getMessages({ auth, id }));
       };
       getMessagesData();

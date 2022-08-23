@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { GLOBALTYPES } from "./redux/actions/globalTypes";
 import { POST_TYPES } from "./redux/actions/postAction";
 import { NOTIFY_TYPES } from "./redux/actions/notifyAction";
-import audiobell from './audio/got-it-done-613.mp3'
+import audiobell from "./audio/got-it-done-613.mp3";
+import { MESS_TYPES } from "./redux/actions/messageAction";
 const spawnNotification = (body, icon, url, title) => {
   let options = {
     body,
@@ -98,6 +99,13 @@ const SocketClient = () => {
     });
 
     return () => socket.off("removeNotifyToClient");
+  }, [socket, dispatch]);
+  useEffect(() => {
+    socket.on("addMessageToClient", (msg) => {
+      dispatch({ type: MESS_TYPES.ADD_MESSAGE, payload: msg });
+    });
+
+    return () => socket.off("addMessageToClient");
   }, [socket, dispatch]);
   return (
     <>

@@ -1,4 +1,4 @@
-import { MESS_TYPES } from "../actions/messageAction";
+ import { MESS_TYPES } from "../actions/messageAction";
 const initialState = {
   users: [],
   resultUsers: 0,

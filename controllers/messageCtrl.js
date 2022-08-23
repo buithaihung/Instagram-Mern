@@ -17,19 +17,19 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const { sender, recipient, text, media } = req.body;
+      const {  recipient, text, media } = req.body;
 
       if (!recipient || (!text.trim() && media.length === 0 && !call)) return;
 
       const newConversation = await Conversations.findOneAndUpdate(
         {
           $or: [
-            { recipients: [sender, recipient] },
-            { recipients: [recipient, sender] },
+            { recipients: [req.user._id, recipient] },
+            { recipients: [recipient, req.user._id] },
           ],
         },
         {
-          recipients: [sender, recipient],
+          recipients: [req.user._id, recipient],
           text,
           media,
         },
@@ -38,11 +38,11 @@ const messageCtrl = {
 
       const newMessage = new Messages({
         conversation: newConversation._id,
-        sender,
+        sender: req.user._id,
         recipient,
         text,
       });
-
+      // console.log(newMessage);
       await newMessage.save();
 
       res.json({ msg: "Create Success!" });
@@ -62,7 +62,6 @@ const messageCtrl = {
       const conversations = await features.query
         .sort("-updatedAt")
         .populate("recipients", "avatar username fullname");
-
       res.json({
         conversations,
         result: conversations.length,
