@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import UserCard from "../UserCard";
 import { useSelector, useDispatch } from "react-redux";
 import { getDataAPI } from "../../utils/fetchData";
@@ -13,6 +13,8 @@ const LeftSide = () => {
   const [searchUsers, setSearchUsers] = useState([]);
   const history = useHistory();
   const { id } = useParams();
+  const pageEnd = useRef();
+  const [page, setPage] = useState(0);
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!search) return setSearchUsers([]);
@@ -37,10 +39,27 @@ const LeftSide = () => {
     return "";
   };
   useEffect(() => {
-    if(message.firstLoad) return;
-    dispatch(getConversations({auth}))
-  }, [dispatch, auth, message.firstLoad])
-  
+    if (message.firstLoad) return;
+    dispatch(getConversations({ auth }));
+  }, [dispatch, auth, message.firstLoad]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((p) => p + 1);
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+    observer.observe(pageEnd.current);
+  }, [setPage]);
+  useEffect(() => {
+    if (message.resultUsers >= (page - 1) * 9 && page > 1) {
+      dispatch(getConversations({ auth, page }));
+    }
+  }, [message.resultUsers, auth, dispatch, page]);
   return (
     <>
       <form className="message_header" onClick={handleSearch}>
@@ -82,6 +101,9 @@ const LeftSide = () => {
             ))}
           </>
         )}
+        <button ref={pageEnd} style={{ opacity: 0 }}>
+          Load More
+        </button>
       </div>
     </>
   );

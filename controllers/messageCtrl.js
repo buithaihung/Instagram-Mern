@@ -17,19 +17,19 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const {  recipient, text, media } = req.body;
+      const { sender, recipient, text, media } = req.body;
 
-      if (!recipient || (!text.trim() && media.length === 0 && !call)) return;
+      if (!recipient || (!text.trim() && media.length === 0)) return;
 
       const newConversation = await Conversations.findOneAndUpdate(
         {
           $or: [
-            { recipients: [req.user._id, recipient] },
-            { recipients: [recipient, req.user._id] },
+            { recipients: [sender, recipient] },
+            { recipients: [recipient, sender] },
           ],
         },
         {
-          recipients: [req.user._id, recipient],
+          recipients: [sender, recipient],
           text,
           media,
         },
@@ -38,11 +38,12 @@ const messageCtrl = {
 
       const newMessage = new Messages({
         conversation: newConversation._id,
-        sender: req.user._id,
+        sender,
         recipient,
         text,
+        media,
       });
-      // console.log(newMessage);
+
       await newMessage.save();
 
       res.json({ msg: "Create Success!" });
@@ -88,6 +89,17 @@ const messageCtrl = {
         messages,
         result: messages.length,
       });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  deleteMessages: async (req, res) => {
+    try {
+      await Messages.findOneAndDelete({
+        _id: req.params.id,
+        sender: req.user._id,
+      });
+      res.json({ msg: "Delete Success!" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
