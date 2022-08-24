@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import UserCard from "../UserCard";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -21,6 +21,7 @@ const RightSide = () => {
   const [text, setText] = useState("");
   const [media, setMedia] = useState([]);
   const [loadMedia, setLoadMedia] = useState(false);
+  const refDisplay = useRef();
   useEffect(() => {
     const newUser = message.users.find((user) => user._id === id);
     if (newUser) {
@@ -66,13 +67,22 @@ const RightSide = () => {
       createdAt: new Date().toISOString(),
     };
     setLoadMedia(false);
-    dispatch(addMessage({ msg, auth, socket }));
+    await dispatch(addMessage({ msg, auth, socket }));
+    if (refDisplay.current) {
+      refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
   };
   useEffect(() => {
     if (id) {
       const getMessagesData = async () => {
         dispatch({ type: MESS_TYPES.GET_MESSAGES, payload: { messages: [] } });
         await dispatch(getMessages({ auth, id }));
+        setTimeout(() => {
+          refDisplay.current.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+          });
+        }, 50);
       };
       getMessagesData();
     }
@@ -91,7 +101,7 @@ const RightSide = () => {
         className="chat_container"
         style={{ height: media.length > 0 ? "calc(100% - 180px)" : "" }}
       >
-        <div className="chat_display">
+        <div className="chat_display" ref={refDisplay}>
           {message.data.map((msg, index) => (
             <div key={index}>
               {msg.sender !== auth.user._id && (
