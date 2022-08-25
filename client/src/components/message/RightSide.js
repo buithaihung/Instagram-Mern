@@ -7,15 +7,18 @@ import Icons from "../Icons";
 import { GLOBALTYPES } from "../../redux/actions/globalTypes";
 import { imageShow, videoShow } from "../../utils/mediaShow";
 import { imageUpload } from "../../utils/imageUpload";
+import { useHistory } from "react-router-dom";
 import {
   addMessage,
   getMessages,
   loadMoreMessages,
+  deleteConversation,
 } from "../../redux/actions/messageAction";
 import LoadIcon from "../../images/loading.gif";
 const RightSide = () => {
   const { auth, message, theme, socket } = useSelector((state) => state);
   const dispatch = useDispatch();
+  const history = useHistory();
   const { id } = useParams();
   const [user, setUser] = useState([]);
   const [text, setText] = useState("");
@@ -138,12 +141,22 @@ const RightSide = () => {
     // eslint-disable-next-line
   }, [isLoadMore]);
 
+  const handleDeleteConversation = () => {
+    if (window.confirm("Do you want to delete?")) {
+      dispatch(deleteConversation({ auth, id }));
+      return history.push("/message");
+    }
+  };
+
   return (
     <>
-      <div className="message_header">
+      <div className="message_header" style={{ cursor: "pointer" }}>
         {user.length !== 0 && (
           <UserCard user={user}>
-            <i className="fas fa-trash text-danger" />
+            <i
+              className="fas fa-trash text-danger"
+              onClick={handleDeleteConversation}
+            />
           </UserCard>
         )}
       </div>
